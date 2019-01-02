@@ -1,11 +1,9 @@
-package se.kth.id1212.hangmangame.controller;
+package se.kth.id1212.hangmangame.view;
 
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +16,10 @@ import common.Response;
 import se.kth.id1212.hangmangame.R;
 import se.kth.id1212.hangmangame.net.ConnectionHandler;
 
+/**
+ * Fragment that lays ontop on the GameActivity. In the menu the user can start
+ * a new game or quit after a game has ended.
+ */
 public class MenuFragment extends Fragment {
 
     @Nullable
@@ -62,6 +64,11 @@ public class MenuFragment extends Fragment {
     }
 
 
+    /**
+     * Private inner class that are responsible to send a either a new game message or a quit message.
+     * If a new game is choosen, the fragment should be removec. If quit is choosen, then the application
+     * should just exit.
+     */
     private class SendMessage extends AsyncTask<String,Void,Void> {
         @Override
         protected Void doInBackground(String... strings) {

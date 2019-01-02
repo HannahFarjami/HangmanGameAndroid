@@ -1,4 +1,4 @@
-package se.kth.id1212.hangmangame.controller;
+package se.kth.id1212.hangmangame.view;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -15,6 +15,10 @@ import com.google.firebase.iid.InstanceIdResult;
 
 import se.kth.id1212.hangmangame.R;
 
+
+/**
+ * First view when app starts, user puts in server ip and server port.
+ */
 public class MainActivity extends Activity {
 
     @Override
@@ -37,7 +41,6 @@ public class MainActivity extends Activity {
                         else System.out.println("Failed to generate token!");
                     }
                 });
-
 
         EditText port = (EditText)findViewById(R.id.port);
         EditText serverIP = (EditText)findViewById(R.id.serverIP);

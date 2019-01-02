@@ -1,6 +1,5 @@
-package se.kth.id1212.hangmangame.controller;
+package se.kth.id1212.hangmangame.view;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -9,9 +8,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,6 +20,10 @@ import se.kth.id1212.hangmangame.R;
 import se.kth.id1212.hangmangame.net.ConnectionHandler;
 import se.kth.id1212.hangmangame.net.IGameObserver;
 
+/**
+ * The Activity that handle the actual game  regarding input/output from/to user.
+ * Also takes care of the connection.
+ */
 public class GameActivity extends FragmentActivity implements IGameObserver {
 
     ConnectionHandler connectionHandler;
@@ -30,6 +31,10 @@ public class GameActivity extends FragmentActivity implements IGameObserver {
         return connectionHandler;
     }
 
+    /**
+     * Creates the game activity and starts the connection with the server
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +46,11 @@ public class GameActivity extends FragmentActivity implements IGameObserver {
         new ConnectToGameServer().execute(serverIP,port);
     }
 
+    /**
+     * This method is called when the server sends a response with a changed game state
+     *
+     * @param response is the game state sent by the server
+     */
     @Override
     public void gameChanges(final Response response) {
         runOnUiThread(new Runnable() {
@@ -56,9 +66,9 @@ public class GameActivity extends FragmentActivity implements IGameObserver {
                 StringBuilder stringBuilder = new StringBuilder();
                 for(char letter:word){
                     if(letter==0)
-                        stringBuilder.append("_");
+                        stringBuilder.append("_ ");
                     else
-                        stringBuilder.append(letter);
+                        stringBuilder.append(letter +" ");
                 }
                 TextView myText = new TextView(getApplicationContext());
                 myText.setText(stringBuilder.toString());
@@ -84,6 +94,10 @@ public class GameActivity extends FragmentActivity implements IGameObserver {
 
     public void sendGuess(View v){
         EditText guess = (EditText)findViewById(R.id.guess);
+        if(guess.length()==0){
+            showToast("Guess must be a letter or a word");
+            return;
+        }
         new SendGuess().execute(guess.getText().toString());
     }
 
@@ -94,6 +108,12 @@ public class GameActivity extends FragmentActivity implements IGameObserver {
         System.exit(1);
     }
 
+    /**
+     * Private inner class that are responsible to call the connectionHandler on a new thread to
+     * start a new connection with the server.
+     * If an error is thrown then call the connectionError method.
+     * Sends
+     */
     private class ConnectToGameServer extends AsyncTask<String,Void,Void>{
 
         private Exception e = null;
@@ -120,7 +140,6 @@ public class GameActivity extends FragmentActivity implements IGameObserver {
         }
     }
 
-
     private class SendGuess extends AsyncTask<String,Void,Void>{
         @Override
         protected Void doInBackground(String... strings) {
@@ -129,21 +148,29 @@ public class GameActivity extends FragmentActivity implements IGameObserver {
         }
     }
 
+    /**
+     * If there is an error trhown when trying to connect, give the user a message and
+     * go back to the main screen.
+     */
     public void connectionError(){
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Context context = getApplicationContext();
-                CharSequence text = "No connection could be established to the game server";
-                int duration = Toast.LENGTH_LONG;
-
-                Toast toast = Toast.makeText(context, text, duration);
-                toast.show();
+                showToast("No connection could be established to the game server");
             }
         });
         Intent i = new Intent(GameActivity.this, MainActivity.class);
         finish();
         startActivity(i);
+    }
+
+
+    private void showToast(String message){
+        Context context = getApplicationContext();
+        int duration = Toast.LENGTH_LONG;
+
+        Toast toast = Toast.makeText(context, message, duration);
+        toast.show();
     }
 }
 

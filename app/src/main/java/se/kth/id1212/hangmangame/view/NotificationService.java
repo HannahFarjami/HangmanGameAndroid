@@ -5,23 +5,14 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.media.RingtoneManager;
-import android.net.Uri;
-import android.os.Build;
-import android.support.annotation.RequiresApi;
+
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import java.util.Random;
 
 import se.kth.id1212.hangmangame.R;
-import se.kth.id1212.hangmangame.controller.MainActivity;
-
-import static android.support.constraint.Constraints.TAG;
 
 /**
  * This class is used for handling the notification in the foregrounded application (Hangman Game) using FCM
@@ -33,17 +24,22 @@ public class NotificationService extends FirebaseMessagingService {
         showNotification("Hangman Game",remoteMessage.getNotification().getBody());
     }
 
+    /**
+     * Creates a notification to bee shown when the game is in the foreground.
+     *
+     * @param title of the notification
+     * @param content is the message of the notification
+     */
     void showNotification(String title, String content) {
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel("default",
-                    "YOUR_CHANNEL_NAME",
+            NotificationChannel channel = new NotificationChannel("NOTIFICATION_CHANNEL",
+                    "HANGMAN_NOTIFICATION_CHANNEL",
                     NotificationManager.IMPORTANCE_DEFAULT);
-            channel.setDescription("YOUR_NOTIFICATION_CHANNEL_DISCRIPTION");
             mNotificationManager.createNotificationChannel(channel);
         }
-        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), "default")
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), "NOTIFICATION_CHANNEL")
                 .setSmallIcon(R.drawable.hangman) // notification icon
                 .setContentTitle(title) // title for notification
                 .setContentText(content)// message for notification
